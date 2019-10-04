@@ -32,7 +32,6 @@ class GCPHandler(logging.Handler):
             resource = _GLOBAL_RESOURCE
         else:
             resource = Resource(type=resource['type'], labels=resource['labels'])
-            print str( resource)
         self.resource = resource
         self.transport_parent = BackgroundThreadTransport(client, parentLogName)
         self.transport_child = BackgroundThreadTransport(client, childLogName)           
@@ -121,5 +120,4 @@ class GCPHandler(logging.Handler):
                 span_id = SPAN,
                 http_request=REQUEST)            
             
-            #response.headers['x-upstream-service-time'] = g.request_time()
             return response

@@ -45,9 +45,9 @@ class GCPHandler(logging.Handler):
         SEVERITY = record.levelname
 
         # if the current log is at a lower level than is setup, skip it
-        if (record.levelname < logging.level):
+        if (record.levelno < logging.level):
             return
-        self.mLogLevels.append(SEVERITY)
+        self.mLogLevels.append(record.levelno)
         TRACE = None
         SPAN = None
         if (self.traceHeaderName in request.headers.keys()):
@@ -112,10 +112,12 @@ class GCPHandler(logging.Handler):
             # find the log level priority sub-messages; apply the max level to the root log message 
             if len(self.mLogLevels) == 0:
                 severity = logging.getLevelName(logging.INFO)
-                if (response.status_code >= 400 ):
+                if (response.status_code >= 400 and response.status_code < 500):
+                   severity = logging.getLevelName(logging.WARNING)
+                elif (response.status_code >= 500):
                    severity = logging.getLevelName(logging.ERROR)
             else:
-                severity = max(self.mLogLevels)
+                severity = logging.getLevelName(max(self.mLogLevels))
             self.mLogLevels=[]
             self.transport_parent.send(
                 None,

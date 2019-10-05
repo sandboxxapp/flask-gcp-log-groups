@@ -45,7 +45,7 @@ class GCPHandler(logging.Handler):
         SEVERITY = record.levelname
 
         # if the current log is at a lower level than is setup, skip it
-        if (record.levelname <= logging.level):
+        if (record.levelname < logging.level):
             return
         self.mLogLevels.append(SEVERITY)
         TRACE = None
@@ -115,7 +115,7 @@ class GCPHandler(logging.Handler):
                 if (response.status_code >= 400 ):
                    severity = logging.getLevelName(logging.ERROR)
             else:
-                severity= min(self.mLogLevels)
+                severity = max(self.mLogLevels)
             self.mLogLevels=[]
             self.transport_parent.send(
                 None,

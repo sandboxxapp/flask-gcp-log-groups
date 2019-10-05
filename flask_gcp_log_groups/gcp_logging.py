@@ -45,7 +45,7 @@ class GCPHandler(logging.Handler):
         SEVERITY = record.levelname
 
         # if the current log is at a lower level than is setup, skip it
-        if (record.levelname <= logging.getLevelName):
+        if (record.levelname <= logging.level):
             return
         self.mLogLevels.append(SEVERITY)
         TRACE = None

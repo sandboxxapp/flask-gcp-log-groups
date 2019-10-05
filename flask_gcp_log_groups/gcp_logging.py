@@ -53,12 +53,12 @@ class GCPHandler(logging.Handler):
         if (self.traceHeaderName in request.headers.keys()):
           # trace can be formatted as "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
           rawTrace = request.headers.get(self.traceHeaderName) #.split('/')
-          trace_id = rawTrace#[0]
+          trace_id = rawTrace[0]
           TRACE = "projects/{project_id}/traces/{trace_id}".format(
               project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
               trace_id=trace_id)
-#          if ( len(rawTrace) > 1) :
-#              SPAN = rawTrace[1].split(';')[0]
+          if ( len(rawTrace) > 1) :
+              SPAN = rawTrace[1].split(';')[0]
 
         self.transport_child.send(
                 msg,
@@ -85,12 +85,12 @@ class GCPHandler(logging.Handler):
             if (self.traceHeaderName in request.headers.keys()):
               # trace can be formatted as "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
               rawTrace = request.headers.get(self.traceHeaderName)#.split('/')
-              trace_id = rawTrace#[0]
+              trace_id = rawTrace[0]
               TRACE = "projects/{project_id}/traces/{trace_id}".format(
                   project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
                   trace_id=trace_id)
-#              if ( len(rawTrace) > 1) :
-#                SPAN = rawTrace[1].split(';')[0]
+              if ( len(rawTrace) > 1) :
+                SPAN = rawTrace[1].split(';')[0]
 
             # https://github.com/googleapis/googleapis/blob/master/google/logging/type/http_request.proto
             REQUEST = {

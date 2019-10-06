@@ -52,12 +52,12 @@ class GCPHandler(logging.Handler):
         SPAN = None
         if (self.traceHeaderName in request.headers.keys()):
           # trace can be formatted as "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
-          rawTrace = request.headers.get(self.traceHeaderName) #.split('/')
+          rawTrace = request.headers.get(self.traceHeaderName).split('/')
           trace_id = rawTrace[0]
           TRACE = "projects/{project_id}/traces/{trace_id}".format(
               project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
               trace_id=trace_id)
-          if ( len(rawTrace) > 1) :
+          if (len(rawTrace) > 1):
               SPAN = rawTrace[1].split(';')[0]
 
         self.transport_child.send(
@@ -84,7 +84,7 @@ class GCPHandler(logging.Handler):
             SPAN = None
             if (self.traceHeaderName in request.headers.keys()):
               # trace can be formatted as "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
-              rawTrace = request.headers.get(self.traceHeaderName)#.split('/')
+              rawTrace = request.headers.get(self.traceHeaderName).split('/')
               trace_id = rawTrace[0]
               TRACE = "projects/{project_id}/traces/{trace_id}".format(
                   project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),

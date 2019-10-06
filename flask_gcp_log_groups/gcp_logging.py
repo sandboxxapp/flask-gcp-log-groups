@@ -111,7 +111,7 @@ class GCPHandler(logging.Handler):
 
             # find the log level priority sub-messages; apply the max level to the root log message 
             if len(self.mLogLevels) == 0:
-                severity = logging.getLevelName(logging.NOTSET)
+                severity = None
                 if (response.status_code >= 400 and response.status_code < 500):
                    severity = logging.getLevelName(logging.WARNING)
                 elif (response.status_code >= 500):

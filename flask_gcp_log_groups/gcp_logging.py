@@ -46,9 +46,6 @@ class GCPHandler(logging.Handler):
         msg = self.format(record)
         SEVERITY = record.levelname
 
-        # if the current log is at a lower level than is setup, skip it
-        if (record.levelno < self.level):
-            return
         self.mLogLevels.append(record.levelno)
         TRACE = None
         SPAN = None

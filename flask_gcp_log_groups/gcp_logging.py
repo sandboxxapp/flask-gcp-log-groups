@@ -8,7 +8,7 @@ import datetime
 import os
 
 import time
-from flask import Flask
+from flask import Flask, has_request_context
 from flask import request, Response, render_template, g, jsonify, current_app
 
 from google.cloud import logging as gcplogging
@@ -41,6 +41,8 @@ class GCPHandler(logging.Handler):
             self.init_app(app)
             
     def emit(self, record):
+        if not has_request_context():
+            return
         msg = self.format(record)
         SEVERITY = record.levelname
 

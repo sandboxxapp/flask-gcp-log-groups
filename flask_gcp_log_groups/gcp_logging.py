@@ -80,7 +80,7 @@ class GCPHandler(logging.Handler):
         def before_request():
             g.request_start_time = time.time()
             g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
-            g.trace_id = ''.join(random.choice(letters) for i in range(32))
+            g.trace_id = ''.join(random.choice(letters + '1234567890') for i in range(32))
 
         # always log the http_request@ default INFO
         @app.after_request

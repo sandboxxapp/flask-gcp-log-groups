@@ -90,7 +90,7 @@ class GCPHandler(logging.Handler):
                   trace_id=trace_id)
                 if ( len(rawTrace) > 1):
                     SPAN = rawTrace[1].split(';')[0]
-
+                logging.error(request.headers.get(self.traceHeaderName))
                 logging.error(rawTrace)
                 logging.error(trace_id)
                 logging.error(TRACE)

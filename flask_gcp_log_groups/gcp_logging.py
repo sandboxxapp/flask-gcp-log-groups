@@ -57,10 +57,10 @@ class GCPHandler(logging.Handler):
         if (self.traceHeaderName in request.headers.keys()):
           # trace can be formatted as "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
           rawTrace = request.headers.get(self.traceHeaderName).split('/')
-          trace_id = rawTrace[0]
+          # trace_id = rawTrace[0]
           TRACE = "projects/{project_id}/traces/{trace_id}".format(
               project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
-              trace_id=trace_id)
+              trace_id=g.trace_id)
           if (len(rawTrace) > 1):
               SPAN = rawTrace[1].split(';')[0]
 
@@ -80,6 +80,7 @@ class GCPHandler(logging.Handler):
         def before_request():
             g.request_start_time = time.time()
             g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
+            g.trace_id = ''.join(random.choice(letters) for i in range(32))
 
         # always log the http_request@ default INFO
         @app.after_request
@@ -89,15 +90,14 @@ class GCPHandler(logging.Handler):
             if (self.traceHeaderName in request.headers.keys()):
                 # trace can be formatted as "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
                 rawTrace = request.headers.get(self.traceHeaderName).split('/')
-                trace_id = ''.join(random.choice(letters) for i in range(32))
                 TRACE = "projects/{project_id}/traces/{trace_id}".format(
                   project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
-                  trace_id=trace_id)
+                  trace_id=g.trace_id)
                 if ( len(rawTrace) > 1):
                     SPAN = rawTrace[1].split(';')[0]
                 logging.error(request.headers.get(self.traceHeaderName))
                 logging.error(rawTrace)
-                logging.error(trace_id)
+                logging.error(g.trace_id)
                 logging.error(TRACE)
                 logging.error(SPAN)
 

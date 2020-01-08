@@ -82,15 +82,19 @@ class GCPHandler(logging.Handler):
             TRACE = None
             SPAN = None
             if (self.traceHeaderName in request.headers.keys()):
-              # trace can be formatted as "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
-              rawTrace = request.headers.get(self.traceHeaderName).split('/')
-              # trace_id = rawTrace[0]
-              TRACE = rawTrace[0]
-              # TRACE = "projects/{project_id}/traces/{trace_id}".format(
-              #     project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
-              #     trace_id=trace_id)
-              if ( len(rawTrace) > 1) :
-                SPAN = rawTrace[1].split(';')[0]
+                # trace can be formatted as "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
+                rawTrace = request.headers.get(self.traceHeaderName).split('/')
+                trace_id = rawTrace[0]
+                TRACE = "projects/{project_id}/traces/{trace_id}".format(
+                  project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
+                  trace_id=trace_id)
+                if ( len(rawTrace) > 1):
+                    SPAN = rawTrace[1].split(';')[0]
+
+                logging.error(rawTrace)
+                logging.error(trace_id)
+                logging.error(TRACE)
+                logging.error(SPAN)
 
             # https://github.com/googleapis/googleapis/blob/master/google/logging/type/http_request.proto
             REQUEST = {
@@ -112,10 +116,12 @@ class GCPHandler(logging.Handler):
             # find the log level priority sub-messages; apply the max level to the root log message 
             if len(self.mLogLevels) == 0:
                 severity = None
-                if (response.status_code >= 400 ):
+                if (response.status_code >= 400 and response.status_code < 500):
+                   severity = logging.getLevelName(logging.WARNING)
+                elif (response.status_code >= 500):
                    severity = logging.getLevelName(logging.ERROR)
             else:
-                severity = max(self.mLogLevels)
+                severity = logging.getLevelName(max(self.mLogLevels))
             self.mLogLevels=[]
             self.transport_parent.send(
                 None,

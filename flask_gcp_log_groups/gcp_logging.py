@@ -129,7 +129,7 @@ class GCPHandler(logging.Handler):
                 severity = severity,
                 resource=self.resource,
                 labels=self.labels,
-                trace=TRACE,
+                trace=None,
                 span_id = SPAN,
                 http_request=REQUEST)            
             

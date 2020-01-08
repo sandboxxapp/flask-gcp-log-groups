@@ -84,10 +84,11 @@ class GCPHandler(logging.Handler):
             if (self.traceHeaderName in request.headers.keys()):
               # trace can be formatted as "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
               rawTrace = request.headers.get(self.traceHeaderName).split('/')
-              trace_id = rawTrace[0]
-              TRACE = "projects/{project_id}/traces/{trace_id}".format(
-                  project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
-                  trace_id=trace_id)
+              # trace_id = rawTrace[0]
+              TRACE = rawTrace[0]
+              # TRACE = "projects/{project_id}/traces/{trace_id}".format(
+              #     project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
+              #     trace_id=trace_id)
               if ( len(rawTrace) > 1) :
                 SPAN = rawTrace[1].split(';')[0]
 
@@ -111,12 +112,10 @@ class GCPHandler(logging.Handler):
             # find the log level priority sub-messages; apply the max level to the root log message 
             if len(self.mLogLevels) == 0:
                 severity = None
-                if (response.status_code >= 400 and response.status_code < 500):
-                   severity = logging.getLevelName(logging.WARNING)
-                elif (response.status_code >= 500):
+                if (response.status_code >= 400 ):
                    severity = logging.getLevelName(logging.ERROR)
             else:
-                severity = logging.getLevelName(max(self.mLogLevels))
+                severity = max(self.mLogLevels)
             self.mLogLevels=[]
             self.transport_parent.send(
                 None,

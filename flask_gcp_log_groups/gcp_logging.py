@@ -130,7 +130,7 @@ class GCPHandler(logging.Handler):
                 resource=self.resource,
                 labels=self.labels,
                 trace=TRACE,
-                span_id = SPAN,
+                span_id=None,
                 http_request=REQUEST)
 
             return response

@@ -20,10 +20,9 @@ client = gcplogging.Client()
 
 class GCPHandler(logging.Handler):
     
-    def __init__(self, app, childLogName='application',
+    def __init__(self, childLogName='application',
                  traceHeaderName=None, labels=None, resource=None):
         logging.Handler.__init__(self)
-        self.app = app
         self.labels=labels
         self.traceHeaderName = traceHeaderName
         if (resource is None):

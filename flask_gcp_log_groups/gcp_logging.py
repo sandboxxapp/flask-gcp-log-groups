@@ -20,43 +20,39 @@ client = gcplogging.Client()
 
 class GCPHandler(logging.Handler):
     
-    def __init__(self, childLogName='application',
-                 traceHeaderName=None, labels=None, resource=None):
+    def __init__(self, child_log_name='application',
+                 trace_header_name=None, labels=None, resource=None):
         logging.Handler.__init__(self)
         self.labels=labels
-        self.traceHeaderName = traceHeaderName
-        if (resource is None):
+        self.trace_header_name = trace_header_name
+        if resource is None:
             resource = _GLOBAL_RESOURCE
         else:
             resource = Resource(type=resource['type'], labels=resource['labels'])
         self.resource = resource
-        self.transport_child = BackgroundThreadTransport(client, childLogName)           
+        self.transport_child = BackgroundThreadTransport(client, child_log_name)           
         self.mLogLevels = []
             
     def emit(self, record):
         if not has_request_context():
             return
         msg = self.format(record)
-        SEVERITY = record.levelname
 
         self.mLogLevels.append(record.levelno)
-        TRACE = None
-        SPAN = None
-        if (self.traceHeaderName in request.headers.keys()):
-          # trace can be formatted as "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
-          rawTrace = request.headers.get(self.traceHeaderName).split('/')
-          trace_id = rawTrace[0]
-          TRACE = "projects/{project_id}/traces/{trace_id}".format(
-              project_id=os.getenv('GOOGLE_CLOUD_PROJECT'),
-              trace_id=trace_id)
-          if (len(rawTrace) > 1):
-              SPAN = rawTrace[1].split(';')[0]
+        trace_path = None
+        span_id = None
+        if self.trace_header_name in request.headers.keys():
+            # trace can be formatted as "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
+            raw_trace = request.headers.get(self.trace_header_name).split('/')
+            trace_id = raw_trace[0]
+            trace_path = f"projects/{os.getenv('GOOGLE_CLOUD_PROJECT')}/traces/{trace_id}"
+            if len(raw_trace) > 1:
+                span_id = raw_trace[1].split(';')[0]
 
-        self.transport_child.send(
-                msg,
-                timestamp=datetime.datetime.utcnow(),                
-                severity=SEVERITY,
-                resource=self.resource,
-                labels=self.labels,
-                trace=TRACE,
-                span_id=SPAN)            
+        self.transport_child.send(msg,
+                                  timestamp=datetime.datetime.utcnow(),
+                                  severity=record.levelname,
+                                  resource=self.resource,
+                                  labels=self.labels,
+                                  trace=trace_path,
+                                  span_id=span_id)

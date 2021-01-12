@@ -9,7 +9,7 @@ import os
 from flask import has_request_context
 from flask import request
 from google.cloud import logging as gcplogging
-from google.cloud.logging.resource import Resource
+from google.cloud.logging import Resource
 
 from flask_gcp_log_groups.background_thread import BackgroundThreadTransport
 

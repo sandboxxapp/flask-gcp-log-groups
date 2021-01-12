@@ -7,7 +7,7 @@ import logging
 import threading
 import time
 
-from google.cloud.logging.handlers.transports.base import Transport
+from google.cloud.logging.handlers.transports import Transport
 from six.moves import queue
 from six.moves import range
 
